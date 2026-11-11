@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de administración · KAIROS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+
+<div th:replace="~{fragmentos/header :: header('admin')}"></div>
+
+<main class="admin-shell">
+    <!-- head -->
+    <div class="admin-head">
+        <div>
+            <h1 class="admin-title">PANEL DE ADMINISTRACIÓN</h1>
+        </div>
+    </div>
+
+    <!-- metricas -->
+    <section class="stat-grid" aria-label="Métricas de moderación">
+        <div class="stat-card">
+            <span class="stat-card__label">Total publicaciones</span>
+            <span class="stat-card__value" th:text="${totalPublicaciones}">0</span>
+            <span class="stat-card__hint">Histórico completo</span>
+        </div>
+        <div class="stat-card stat-card--pending">
+            <span class="stat-card__label">Pendientes</span>
+            <span class="stat-card__value" th:text="${totalPendientes}">0</span>
+            <span class="stat-card__hint">Requieren revisión</span>
+        </div>
+        <div class="stat-card stat-card--active">
+            <span class="stat-card__label">Activas en feed</span>
+            <span class="stat-card__value" th:text="${totalActivas}">0</span>
+            <span class="stat-card__hint">Visibles al público</span>
+        </div>
+        <div class="stat-card stat-card--inactive">
+            <span class="stat-card__label">Inhabilitadas</span>
+            <span class="stat-card__value" th:text="${totalInactivas}">0</span>
+            <span class="stat-card__hint">Inhabilitadas</span>
+        </div>
+        <div class="stat-card stat-card--expired">
+            <span class="stat-card__label">Vencidas</span>
+            <span class="stat-card__value" th:text="${totalVencidas}">0</span>
+            <span class="stat-card__hint">Ya vencidas</span>
+        </div>
+    </section>
+
+    <!-- filtros -->
+    <div class="admin-tabs" aria-label="Filtrar por estado">
+        <a class="admin-tab"
+           th:classappend="${estadoSeleccionado == 'TODAS'} ? 'is-active'"
+           th:href="@{/admin}">
+            [ TODAS ] <span class="admin-tab__count" th:text="${totalPublicaciones}">0</span>
+        </a>
+        <a class="admin-tab"
+           th:each="estado : ${estados}"
+           th:classappend="${estadoSeleccionado == estado.name()} ? 'is-active'"
+           th:href="@{/admin(estado=${estado.name()})}">
+            <span th:text="${'[ ' + #strings.toUpperCase(estado.etiqueta) + ' ]'}">[ ESTADO ]</span>
+        </a>
+    </div>
+
+    <!-- tabla de moderacion -->
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Oferta</th>
+                <th>Autor</th>
+                <th>Taxonomía</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Reportes</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${publicaciones}">
+
+                <td>
+                    <a class="cell-title"
+                       th:href="@{/publicacion/{id}(id=${p.id})}"
+                       th:text="${p.titulo}">
+                        Título de la oferta
+                    </a>
+                    <span class="cell-sub" th:text="${p.subcategoria.nombre}">Subcategoría</span>
+                </td>
+
+                <td>
+                    <span class="cell-sub" th:text="${'@' + p.usuario.nombreUsuario}">@curador</span>
+                    <span class="cell-sub" th:text="${p.usuario.rol.etiqueta}">Usuario</span>
+                </td>
+
+                <td>
+                    <span class="cell-sub" th:text="${p.categoria.nombre}">Categoría</span>
+                    <span class="cell-sub" th:text="${p.subcategoria.nombre}">Subcategoría</span>
+                </td>
+
+                <td class="cell-price">
+                    <span th:text="${'$' + #numbers.formatDecimal(p.precioOferta, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+                    <s th:if="${p.precioOriginal != null}"
+                       th:text="${'$' + #numbers.formatDecimal(p.precioOriginal, 1, 'COMMA', 2, 'POINT')}">
+                        $0.00
+                    </s>
+                </td>
+
+                <td>
+                    <span class="badge"
+                          th:classappend="${'badge--' + p.estado.tono}"
+                          th:text="${p.estado.etiqueta}">
+                        Activa
+                    </span>
+                </td>
+
+                <td class="cell-reports"
+                    th:classappend="${p.reportesCount >= 10 ? 'cell-reports--high' : (p.reportesCount >= 7 ? 'cell-reports--mid' : '')}"
+                    th:text="${p.reportesCount + '/10'}">
+                    0/10
+                </td>
+
+                <td class="cell-date" th:text="${p.fechaFormateada}">01/01/2026</td>
+
+                <td>
+                    <div class="actions-cell">
+                        <form th:if="${p.estado.name() != 'ACTIVA'}"
+                              th:action="@{/admin/publicacion/{id}/aprobar(id=${p.id})}"
+                              method="post">
+                            <button class="action-btn action-btn--ok" type="submit" title="Aprobar (RF001)">Aprobar</button>
+                        </form>
+
+                        <form th:if="${p.estado.name() == 'PENDIENTE'}"
+                              th:action="@{/admin/publicacion/{id}/rechazar(id=${p.id})}"
+                              method="post">
+                            <button class="action-btn action-btn--danger" type="submit" title="Rechazar (RF001)">Rechazar</button>
+                        </form>
+
+                        <form th:if="${p.estado.name() == 'ACTIVA'}"
+                              th:action="@{/admin/publicacion/{id}/vencer(id=${p.id})}"
+                              method="post">
+                            <button class="action-btn action-btn--warn" type="submit" title="Marcar vencida (RF004)">Vencer</button>
+                        </form>
+
+                        <form th:if="${p.estado.name() == 'ACTIVA'}"
+                              th:action="@{/admin/publicacion/{id}/inhabilitar(id=${p.id})}"
+                              method="post">
+                            <button class="action-btn" type="submit" title="Inhabilitar oferta">Inhabilitar</button>
+                        </form>
+
+                        <form th:if="${p.estado.name() == 'INACTIVA' or p.estado.name() == 'VENCIDA' or p.estado.name() == 'RECHAZADA'}"
+                              th:action="@{/admin/publicacion/{id}/reactivar(id=${p.id})}"
+                              method="post">
+                            <button class="action-btn action-btn--ok" type="submit" title="Reactivar oferta">Reactivar</button>
+                        </form>
+
+                        <form th:action="@{/admin/publicacion/{id}/eliminar(id=${p.id})}"
+                              method="post"
+                              onsubmit="return confirm('¿Eliminar definitivamente esta publicación? Esta acción no se puede deshacer.');">
+                            <button class="action-btn action-btn--danger" type="submit" title="Eliminar definitivamente (RF002)">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(publicaciones)}">
+                <td colspan="9">
+                    <div class="admin-empty">[ NO HAY PUBLICACIONES EN ESTE ESTADO ]</div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragmentos/footer :: footer}"></footer>
+
+</body>
+</html>

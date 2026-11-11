@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!-- ============================================================
+     FOOTER
+     ============================================================ -->
+
+<footer class="site-footer" th:fragment="footer">
+    <div class="site-footer__inner">
+        <div class="site-footer__brand">
+            <a class="brand" th:href="@{/feed}">
+                <span class="brand__mark">K</span>
+                <span class="brand__text">
+                    KAIROS
+                </span>
+            </a>
+        </div>
+
+        <div class="site-footer__col">
+            <h4>Protocolo</h4>
+            <a th:href="@{/feed}">Feed público</a>
+            <a th:href="@{/publicacion/crear}">Publicar oferta</a>
+        </div>
+
+        <div class="site-footer__col">
+            <span>HTTP_SESSION</span>
+            <span>© 2026 KAIROS</span>
+        </div>
+    </div>
+    <div class="site-footer__bottom">
+        <span>[ KAIROS ] //</span>
+    </div>
+</footer>
+
+</body>
+</html>

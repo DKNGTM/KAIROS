@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ============================================================
+     HEADER · navbar + búsqueda + sesión
+     ============================================================ -->
+<header class="site-header" th:fragment="header(active)">
+    <div class="site-header__inner">
+
+
+        <a class="brand" th:href="@{/feed}" aria-label="Kairos, ir al feed">
+            <span class="brand__mark">K</span>
+            <span class="brand__text">
+                KAIROS
+            </span>
+        </a>
+
+        <form class="global-search" th:action="@{/feed}" method="get" role="search">
+            <span class="material-symbols-outlined" aria-hidden="true">search</span>
+            <input type="search"
+                   name="q"
+                   th:value="${q}"
+                   placeholder="Buscar ofertas, marcas o palabras clave..."
+                   aria-label="Buscar ofertas">
+            <kbd>/</kbd>
+        </form>
+
+        <nav class="nav-links" aria-label="Navegación principal">
+            <a th:href="@{/feed}" th:classappend="${active == 'feed'} ? 'is-active'">[ FEED ]</a>
+            <a th:href="@{/publicacion/crear}" th:classappend="${active == 'crear'} ? 'is-active'">[ PUBLICAR ]</a>
+            <a th:if="${session.esAdmin}" th:href="@{/admin}" th:classappend="${active == 'admin'} ? 'is-active'">[ ADMIN ]</a>
+        </nav>
+
+        <div class="nav-user">
+            <th:block th:if="${session.usuarioLogueado != null}">
+                <a class="user-chip" th:href="@{/feed}" th:title="${session.usuarioLogueado.correo}">
+                    <span class="user-chip__avatar" th:text="${session.usuarioLogueado.iniciales}">SH</span>
+                    <span th:text="${'@' + session.usuarioLogueado.nombreUsuario}">@curador</span>
+                </a>
+                <form class="logout-form" th:action="@{/auth/logout}" method="post">
+                    <button class="logout-btn" type="submit" title="Cerrar sesión">Salir</button>
+                </form>
+            </th:block>
+
+            <th:block th:unless="${session.usuarioLogueado != null}">
+                <a class="btn btn--ghost btn--sm" th:href="@{/auth/login}">[ INGRESAR ]</a>
+                <a class="btn btn--primary btn--sm" th:href="@{/auth/registro}">[ REGISTRO ]</a>
+            </th:block>
+        </div>
+    </div>
+
+</header>
+
+<!-- Mensajes flash globales -->
+<div class="flash-stack" th:if="${mensaje != null or error != null}">
+    <div class="flash flash--ok" th:if="${mensaje}">
+        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+        <span th:text="${mensaje}">Operación completada.</span>
+    </div>
+    <div class="flash flash--error" th:if="${error}">
+        <span class="material-symbols-outlined" aria-hidden="true">error</span>
+        <span th:text="${error}">Ha ocurrido un error.</span>
+    </div>
+</div>
+
+</body>
+</html>

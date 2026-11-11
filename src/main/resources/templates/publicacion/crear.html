@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar oferta · KAIROS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/feed.css}">
+</head>
+<body>
+
+<div th:replace="~{fragmentos/header :: header('crear')}"></div>
+
+<main class="container">
+    <form class="publish-shell"
+          th:action="@{/publicacion/crear}"
+          th:object="${publicacionForm}"
+          method="post"
+          enctype="multipart/form-data"
+          id="publish-form">
+
+        <!-- Cabecera -->
+        <div class="publish-head">
+            <a class="back-link" th:href="@{/feed}">
+                <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+                <span>[ VOLVER AL FEED ]</span>
+            </a>
+            <h1 class="publish-title">PUBLICAR OFERTA</h1>
+        </div>
+
+        <div class="form-error" th:if="${#fields.hasGlobalErrors()}">
+            <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+            <div>
+                <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">
+                    No se pudo publicar la oferta.
+                </p>
+            </div>
+        </div>
+
+        <!-- Titulo y enlace -->
+        <section class="publish-section">
+            <div class="publish-section__head">
+                <h2 class="publish-section__title">TITULO DE LA OFERTA Y ENLACE DIRECTO</h2>
+                <span class="eyebrow" id="char-counter">0/160</span>
+            </div>
+
+            <div class="field" th:classappend="${#fields.hasErrors('titulo')} ? 'has-error'">
+                <label class="field__label" for="deal-title">
+                    <span>Título de la oferta</span>
+                    <span class="req">* REQUERIDO</span>
+                </label>
+                <input class="input"
+                       id="deal-title"
+                       type="text"
+                       th:field="*{titulo}"
+                       maxlength="160"
+                       placeholder="Ej. ThinkPad Carbon X1 Gen 11 - Core i7, 32GB, 1TB SSD">
+                <p class="field__error" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}">
+                    Título no válido.
+                </p>
+            </div>
+
+            <div class="field" th:classappend="${#fields.hasErrors('urlOferta')} ? 'has-error'">
+                <label class="field__label" for="url-oferta">
+                    <span>Enlace directo a la oferta</span>
+                    <span class="req">* REQUERIDO</span>
+                </label>
+                <input class="input"
+                       id="url-oferta"
+                       type="url"
+                       th:field="*{urlOferta}"
+                       placeholder="https://tienda-oficial.com/producto"
+                       maxlength="500">
+                <p class="field__error" th:if="${#fields.hasErrors('urlOferta')}" th:errors="*{urlOferta}">
+                    Enlace no válido.
+                </p>
+            </div>
+        </section>
+
+        <!-- Fotos -->
+        <section class="publish-section">
+            <div class="publish-section__head">
+                <h2 class="publish-section__title">FOTOS Y MULTIMEDIA</h2>
+                <span class="eyebrow">JPG · PNG · WEBP · MÁX. 5 MB</span>
+            </div>
+
+            <div class="dropzone" id="dropzone">
+                <input type="file"
+                       id="imagenes"
+                       name="imagenes"
+                       accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
+                       multiple>
+                <div class="dropzone__icon">
+                    <span class="material-symbols-outlined" aria-hidden="true">cloud_upload</span>
+                </div>
+                <div>
+                    <p class="dropzone__title">Arrastra imágenes del producto o haz clic</p>
+                    <p class="dropzone__hint">Ratio 16:9 sugerido · La primera imagen será la principal</p>
+                </div>
+            </div>
+
+            <div class="preview-grid" id="preview-grid"></div>
+            <p class="field__hint" id="file-status">0 archivos seleccionados.</p>
+        </section>
+
+        <!-- Precio -->
+        <section class="publish-section">
+            <div class="publish-section__head">
+                <h2 class="publish-section__title">PRECIO Y DESCUENTO</h2>
+            </div>
+
+            <div class="price-box">
+                <div class="form-grid form-grid--3">
+                    <div class="field">
+                        <label class="field__label" for="currency-select">Moneda</label>
+                        <select class="select" id="currency-select" name="moneda" disabled>
+                            <option value="USD" selected>USD ($)</option>
+                        </select>
+                    </div>
+
+                    <div class="field" th:classappend="${#fields.hasErrors('precioOferta')} ? 'has-error'">
+                        <label class="field__label" for="price-offer">
+                            <span>Precio oferta</span>
+                            <span class="req">* REQUERIDO</span>
+                        </label>
+                        <input class="input input--number"
+                               id="price-offer"
+                               type="number"
+                               step="0.01"
+                               min="0.01"
+                               th:field="*{precioOferta}"
+                               placeholder="1699.00">
+                        <p class="field__error" th:if="${#fields.hasErrors('precioOferta')}" th:errors="*{precioOferta}">
+                            Precio no válido.
+                        </p>
+                    </div>
+
+                    <div class="field" th:classappend="${#fields.hasErrors('precioOriginal')} ? 'has-error'">
+                        <label class="field__label" for="price-original">
+                            <span>Precio original</span>
+                            <span>OPCIONAL</span>
+                        </label>
+                        <input class="input input--number"
+                               id="price-original"
+                               type="number"
+                               step="0.01"
+                               min="0"
+                               th:field="*{precioOriginal}"
+                               placeholder="2199.00">
+                        <p class="field__error" th:if="${#fields.hasErrors('precioOriginal')}" th:errors="*{precioOriginal}">
+                            Precio no válido.
+                        </p>
+                    </div>
+                </div>
+
+                <p class="field__error" th:if="${#fields.hasErrors('precioCoherente')}" th:errors="*{precioCoherente}">
+                    El precio original debe ser mayor o igual que el precio de oferta.
+                </p>
+
+                <div class="field-inline">
+                    <span class="savings-badge" id="savings-value">[-$0.00 (-0% DTO)]</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Taxonomía -->
+        <section class="publish-section">
+            <div class="publish-section__head">
+                <h2 class="publish-section__title">TAXONOMÍA</h2>
+            </div>
+
+            <div class="form-grid form-grid--2">
+                <div class="field" th:classappend="${#fields.hasErrors('categoriaId')} ? 'has-error'">
+                    <label class="field__label" for="category-select">
+                        <span>Categoría principal</span>
+                        <span class="req">* REQUERIDO</span>
+                    </label>
+                    <select class="select" id="category-select" th:field="*{categoriaId}">
+                        <option value="">— Selecciona una categoría —</option>
+                        <option th:each="cat : ${categorias}"
+                                th:value="${cat.id}"
+                                th:text="${cat.nombre}">
+                            Electrónicos de Consumo
+                        </option>
+                    </select>
+                    <p class="field__error" th:if="${#fields.hasErrors('categoriaId')}" th:errors="*{categoriaId}">
+                        Categoría no válida.
+                    </p>
+                </div>
+
+                <div class="field" th:classappend="${#fields.hasErrors('subcategoriaId')} ? 'has-error'">
+                    <label class="field__label" for="subcategory-select">
+                        <span>Subcategoría</span>
+                        <span class="req">* REQUERIDO</span>
+                    </label>
+                    <select class="select" id="subcategory-select" th:field="*{subcategoriaId}">
+                        <option value="">— Selecciona una subcategoría —</option>
+                        <option th:each="sub : ${subcategorias}"
+                                th:value="${sub.id}"
+                                th:attr="data-categoria=${sub.categoria.id}"
+                                th:text="${sub.nombre}">
+                            Computadoras &amp; Laptops
+                        </option>
+                    </select>
+                    <p class="field__error" th:if="${#fields.hasErrors('subcategoriaId')}" th:errors="*{subcategoriaId}">
+                        Subcategoría no válida.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Descripción -->
+        <section class="publish-section">
+            <div class="publish-section__head">
+                <h2 class="publish-section__title">DESCRIPCIÓN</h2>
+                <span class="eyebrow" id="desc-counter">0/4000</span>
+            </div>
+
+            <div class="field" th:classappend="${#fields.hasErrors('descripcion')} ? 'has-error'">
+                <label class="field__label" for="deal-desc">
+                    <span>Descripción y condiciones de la oferta</span>
+                    <span class="req">* REQUERIDO</span>
+                </label>
+                <textarea class="textarea"
+                          id="deal-desc"
+                          rows="6"
+                          maxlength="4000"
+                          th:field="*{descripcion}"
+                          placeholder="Detalla características clave del producto, condiciones de compra, garantías, cupones o detalles relevantes..."></textarea>
+                <p class="field__error" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}">
+                    Descripción no válida.
+                </p>
+            </div>
+        </section>
+
+
+        <div class="publish-actions">
+            <span class="publish-actions__status" id="publish-status">ENVIAR A MODERACIÓN</span>
+            <div class="publish-actions__buttons">
+                <a class="btn btn--sm" th:href="@{/feed}">[ CANCELAR ]</a>
+                <button class="btn btn--primary" type="submit" id="btn-submit">
+                    <span>[ PUBLICAR OFERTA ➔ ]</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</main>
+
+<footer th:replace="~{fragmentos/footer :: footer}"></footer>
+
+<script>
+    (function () {
+        /* ---------- Contadores ---------- */
+        var titleInput = document.getElementById('deal-title');
+        var charCounter = document.getElementById('char-counter');
+        var descInput = document.getElementById('deal-desc');
+        var descCounter = document.getElementById('desc-counter');
+
+        function refrescarContador(input, target, max) {
+            if (!input || !target) return;
+            target.textContent = input.value.length + '/' + max;
+        }
+
+        if (titleInput) {
+            titleInput.addEventListener('input', function () {
+                refrescarContador(titleInput, charCounter, 160);
+            });
+            refrescarContador(titleInput, charCounter, 160);
+        }
+
+        if (descInput) {
+            descInput.addEventListener('input', function () {
+                refrescarContador(descInput, descCounter, 4000);
+            });
+            refrescarContador(descInput, descCounter, 4000);
+        }
+
+        /* ---------- Cálculo de descuento ---------- */
+        var priceOffer = document.getElementById('price-offer');
+        var priceOriginal = document.getElementById('price-original');
+        var savingsValue = document.getElementById('savings-value');
+
+        function actualizarAhorro() {
+            if (!savingsValue) return;
+            var oferta = parseFloat(priceOffer && priceOffer.value) || 0;
+            var original = parseFloat(priceOriginal && priceOriginal.value) || 0;
+            var diferencia = Math.max(original - oferta, 0);
+            var porcentaje = original > 0 ? Math.round((diferencia / original) * 100) : 0;
+            savingsValue.textContent = '[-$' + diferencia.toFixed(2) + ' (-' + porcentaje + '% DTO)]';
+        }
+
+        if (priceOffer) priceOffer.addEventListener('input', actualizarAhorro);
+        if (priceOriginal) priceOriginal.addEventListener('input', actualizarAhorro);
+        actualizarAhorro();
+
+        /* ---------- Filtro de subcategorías ---------- */
+        var categorySelect = document.getElementById('category-select');
+        var subcategorySelect = document.getElementById('subcategory-select');
+
+        if (categorySelect && subcategorySelect) {
+            var todasLasOpciones = Array.prototype.slice.call(subcategorySelect.options);
+
+            function filtrarSubcategorias(mantenerSeleccion) {
+                var categoria = categorySelect.value;
+                var seleccionActual = mantenerSeleccion ? subcategorySelect.value : '';
+                subcategorySelect.innerHTML = '';
+
+                var placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = '— Selecciona una subcategoría —';
+                subcategorySelect.appendChild(placeholder);
+
+                todasLasOpciones.forEach(function (opcion) {
+                    if (!opcion.value) return;
+                    if (opcion.getAttribute('data-categoria') === categoria) {
+                        var copia = opcion.cloneNode(true);
+                        if (mantenerSeleccion && copia.value === seleccionActual) {
+                            copia.selected = true;
+                        }
+                        subcategorySelect.appendChild(copia);
+                    }
+                });
+            }
+
+            categorySelect.addEventListener('change', function () {
+                filtrarSubcategorias(false);
+            });
+            filtrarSubcategorias(true);
+        }
+
+        /* ---------- Dropzone y previsualización ---------- */
+        var dropzone = document.getElementById('dropzone');
+        var fileInput = document.getElementById('imagenes');
+        var previewGrid = document.getElementById('preview-grid');
+        var fileStatus = document.getElementById('file-status');
+        var archivosSeleccionados = [];
+
+        function renderizarArchivos() {
+            if (!previewGrid) return;
+            previewGrid.innerHTML = '';
+            archivosSeleccionados.forEach(function (file, index) {
+                var item = document.createElement('div');
+                item.className = 'preview-item';
+
+                var img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.alt = file.name;
+
+                var etiqueta = document.createElement('span');
+                etiqueta.textContent = index === 0 ? '[ PRINCIPAL ]' : file.name;
+
+                item.appendChild(img);
+                item.appendChild(etiqueta);
+                previewGrid.appendChild(item);
+            });
+
+            if (fileStatus) {
+                fileStatus.textContent = archivosSeleccionados.length + ' archivo(s) seleccionado(s).';
+            }
+        }
+
+        function agregarArchivos(lista) {
+            Array.prototype.forEach.call(lista, function (file) {
+                if (archivosSeleccionados.length >= 6) return;
+                if (!file.type.startsWith('image/')) {
+                    alert('El archivo "' + file.name + '" no es una imagen válida.');
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('La imagen "' + file.name + '" supera los 5 MB permitidos.');
+                    return;
+                }
+                archivosSeleccionados.push(file);
+            });
+            renderizarArchivos();
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function (event) {
+                agregarArchivos(event.target.files);
+            });
+        }
+
+        if (dropzone) {
+            ['dragenter', 'dragover'].forEach(function (evento) {
+                dropzone.addEventListener(evento, function (event) {
+                    event.preventDefault();
+                    dropzone.classList.add('is-dragover');
+                });
+            });
+            ['dragleave', 'drop'].forEach(function (evento) {
+                dropzone.addEventListener(evento, function (event) {
+                    event.preventDefault();
+                    dropzone.classList.remove('is-dragover');
+                });
+            });
+            dropzone.addEventListener('drop', function (event) {
+                if (event.dataTransfer && event.dataTransfer.files) {
+                    agregarArchivos(event.dataTransfer.files);
+                }
+            });
+        }
+
+        /* ---------- Feedback al enviar ---------- */
+        var publishForm = document.getElementById('publish-form');
+        var btnSubmit = document.getElementById('btn-submit');
+        if (publishForm && btnSubmit) {
+            publishForm.addEventListener('submit', function () {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<span>[ ENVIANDO A MODERACIÓN... ]</span>';
+            });
+        }
+    })();
+</script>
+
+</body>
+</html>

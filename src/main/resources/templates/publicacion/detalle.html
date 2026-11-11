@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${publicacion.titulo + ' · KAIROS'}">Detalle · KAIROS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/feed.css}">
+</head>
+<body>
+
+<div th:replace="~{fragmentos/header :: header('feed')}"></div>
+
+<main class="container detail-shell">
+    <!-- Barra superior -->
+    <div class="detail-topbar">
+        <a class="back-link" th:href="@{/feed}">
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+            <span>[ VOLVER AL FEED PRINCIPAL ]</span>
+        </a>
+    </div>
+
+    <!-- Aviso para estados no públicos -->
+    <div class="flash flash--error flash--spaced" th:if="${publicacion.estado.name() == 'PENDIENTE'}">
+        <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
+        <span>Esta oferta está <strong>PENDIENTE DE MODERACIÓN</strong>. Solo tú y los
+            administradores pueden verla hasta que sea aprobada.</span>
+    </div>
+    <div class="flash flash--error flash--spaced" th:if="${publicacion.estado.name() == 'RECHAZADA' or publicacion.estado.name() == 'INACTIVA'}">
+        <span class="material-symbols-outlined" aria-hidden="true">block</span>
+        <span th:text="${'Esta publicación se encuentra ' + publicacion.estado.etiqueta + ' y no aparece en el feed público.'}">
+            Esta publicación no aparece en el feed público.
+        </span>
+    </div>
+
+    <div class="detail-layout">
+        <div class="detail-main">
+            <div class="media-frame">
+                <span class="badge badge--solid media-frame__badge"
+                      th:if="${publicacion.porcentajeDescuento > 0}"
+                      th:text="${'[-' + publicacion.porcentajeDescuento + '% DTO ]'}">[-40% DTO]</span>
+
+                <span class="badge media-frame__state"
+                      th:classappend="${'badge--' + publicacion.estado.tono}"
+                      th:text="${'[ ' + #strings.toUpperCase(publicacion.estado.etiqueta) + ' ]'}">
+                    [ ACTIVA ]
+                </span>
+
+                <div class="expired-overlay" th:if="${publicacion.vencida}">
+                    <span>[ VENCIDA / AGOTADA ]</span>
+                </div>
+
+                <img class="media-frame__image"
+                     id="main-product-image"
+                     th:src="${publicacion.imagenPrincipal}"
+                     th:alt="${publicacion.titulo}">
+
+                
+            </div>
+
+            <div class="thumb-grid" th:if="${!#lists.isEmpty(publicacion.listaImagenes)}">
+                <button class="thumb"
+                        type="button"
+                        th:each="imagen, iter : ${publicacion.listaImagenes}"
+                        th:classappend="${iter.index == 0} ? 'is-active'"
+                        th:attr="data-full=${imagen}">
+                    <img th:src="${imagen}" th:alt="${'Miniatura ' + iter.count}">
+                </button>
+            </div>
+
+            <section class="panel panel__pad">
+                <div class="panel__head">
+                    <span class="panel__title">[ DESCRIPCIÓN DEL PRODUCTO ]</span>
+                    <span class="eyebrow" th:text="${publicacion.subcategoria.nombre}">Subcategoría</span>
+                </div>
+                <div class="detail-description">
+                    <p th:text="${publicacion.descripcion}">
+                        Descripción de la oferta publicada por el curador.
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <aside class="detail-side">
+            <div class="panel panel__pad stack-md">
+                <div class="deal-head">
+                    <span class="chip" th:text="${publicacion.categoria.nombre}">Electrónicos</span>
+                    <span class="badge"
+                          th:classappend="${'badge--' + publicacion.estado.tono}"
+                          th:text="${publicacion.estado.etiqueta}">Activa</span>
+                </div>
+
+                <h1 class="detail-title" th:text="${publicacion.titulo}">
+                    Título de la oferta
+                </h1>
+
+                <div class="price-panel">
+                    <div class="price-row">
+                        <div>
+                            <span class="price-label">Precio actual oferta</span>
+                            <span class="price-current">
+                                <span th:text="${'$' + #numbers.formatDecimal(publicacion.precioOferta, 1, 'COMMA', 2, 'POINT')}">$899.00</span>
+                                <small>USD</small>
+                            </span>
+                        </div>
+                        <div class="price-meta" th:if="${publicacion.precioOriginal != null}">
+                            <span class="price-label">Precio lista</span>
+                            <span class="price-old"
+                                  th:text="${'$' + #numbers.formatDecimal(publicacion.precioOriginal, 1, 'COMMA', 2, 'POINT') + ' USD'}">
+                                $1,959.00 USD
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="hairline">
+
+                    <div class="price-row">
+                        <span class="price-save"
+                              th:if="${publicacion.ahorro.signum() > 0}"
+                              th:text="${'AHORRO: $' + #numbers.formatDecimal(publicacion.ahorro, 1, 'COMMA', 2, 'POINT')}">
+                            AHORRO: $1,060
+                        </span>
+                        <span class="badge badge--success"
+                              th:if="${publicacion.porcentajeDescuento > 0}"
+                              th:text="${'-' + publicacion.porcentajeDescuento + '% DTO'}">
+                            -40% DTO
+                        </span>
+                    </div>
+                </div>
+
+                <a class="cta-link"
+                   th:if="${publicacion.estado.name() == 'ACTIVA'}"
+                   th:href="${publicacion.urlOferta}"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <span>IR AL LINK DE LA OFERTA</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+                </a>
+                <span class="cta-link cta-link--disabled" th:unless="${publicacion.estado.name() == 'ACTIVA'}">
+                    [ ENLACE NO DISPONIBLE · ESTADO: <span th:text="${#strings.toUpperCase(publicacion.estado.etiqueta)}">VENCIDA</span> ]
+                </span>
+
+                <button class="report-btn"
+                        type="button"
+                        th:if="${puedeReportar}"
+                        th:attr="data-id=${publicacion.id},data-title=${publicacion.titulo},data-count=${publicacion.reportesCount}"
+                        onclick="openReportModal(this)">
+                    <span class="material-symbols-outlined" aria-hidden="true">flag</span>
+                    <span>[ REPORTAR OFERTA / STOCK AGOTADO O CUPÓN EXPIRADO ]</span>
+                </button>
+
+                <span class="report-btn report-btn--done" th:if="${reportado and puedeReportar == false}">
+                    <span class="material-symbols-outlined" aria-hidden="true">flag</span>
+                    <span>[ YA HAS REPORTADO ESTA OFERTA ]</span>
+                </span>
+
+                <a class="report-btn link-plain"
+                   th:if="${session.usuarioLogueado == null}"
+                   th:href="@{/auth/login}">
+                    <span class="material-symbols-outlined" aria-hidden="true">login</span>
+                    <span>[ INICIA SESIÓN PARA REPORTAR ]</span>
+                </a>
+            </div>
+
+            <div class="panel panel__pad">
+                <div class="panel__head">
+                    <span class="panel__title">[ CURADOR DE LA OFERTA ]</span>
+                    <span class="eyebrow">VERIFICADO</span>
+                </div>
+                <div class="curator">
+                    <div class="curator__person">
+                        <div class="avatar" th:text="${publicacion.usuario.iniciales}">SH</div>
+                        <div>
+                            <div class="curator__name" th:text="${'@' + publicacion.usuario.nombreUsuario}">@sys_hunter</div>
+                            <div class="curator__meta" th:text="${'Publicado ' + publicacion.tiempoTranscurrido}">
+                                Publicado hace 14 min
+                            </div>
+                        </div>
+                    </div>
+                    <span class="badge badge--muted" th:text="${publicacion.usuario.rol.etiqueta}">Usuario</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+</main>
+
+<footer th:replace="~{fragmentos/footer :: footer}"></footer>
+
+<!-- Modal de reporte -->
+<div class="modal" id="report-modal" hidden>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+        <div class="modal__head">
+            <div class="modal__title" id="report-modal-title">
+                <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+                <span>REPORTAR OFERTA</span>
+            </div>
+            <button class="modal__close" type="button" onclick="closeReportModal()" aria-label="Cerrar">✕</button>
+        </div>
+
+        <form id="report-form"
+              method="post"
+              th:action="@{/publicacion/0/reportar}"
+              th:attr="data-base=@{/publicacion/}">
+            <div class="modal__body">
+                <div>
+                    <span class="eyebrow">OBJETO A AUDITAR:</span>
+                    <p class="modal__target" id="report-target-title" th:text="${publicacion.titulo}">
+                        Título de la oferta
+                    </p>
+                </div>
+
+                <div class="stack-sm">
+                    <span class="eyebrow">MOTIVO DEL REPORTE:</span>
+                    <label class="report-option">
+                        <input type="radio" name="motivo" value="precio" checked>
+                        <span>Precio desactualizado / Ya no coincide con la tienda</span>
+                    </label>
+                    <label class="report-option">
+                        <input type="radio" name="motivo" value="cupon">
+                        <span>Cupón vencido o agotado</span>
+                    </label>
+                    <label class="report-option">
+                        <input type="radio" name="motivo" value="enlace">
+                        <span>Enlace roto o producto sin existencias</span>
+                    </label>
+                    <label class="report-option">
+                        <input type="radio" name="motivo" value="spam">
+                        <span>Publicación spam o sospecha de fraude</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal__actions">
+                <button class="btn btn--ghost btn--sm" type="button" onclick="closeReportModal()">
+                    [ CANCELAR ]
+                </button>
+                <button class="btn btn--danger btn--sm" type="submit">CONFIRMAR REPORTE</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var mainImage = document.getElementById('main-product-image');
+        document.querySelectorAll('.thumb').forEach(function (thumb) {
+            thumb.addEventListener('click', function () {
+                var full = thumb.getAttribute('data-full');
+                if (full && mainImage) mainImage.src = full;
+                document.querySelectorAll('.thumb').forEach(function (other) {
+                    other.classList.remove('is-active');
+                });
+                thumb.classList.add('is-active');
+            });
+        });
+
+        var modal = document.getElementById('report-modal');
+        var form = document.getElementById('report-form');
+        var targetTitle = document.getElementById('report-target-title');
+        var currentCount = document.getElementById('report-current-count');
+
+        window.openReportModal = function (button) {
+            var id = button.getAttribute('data-id');
+            var title = button.getAttribute('data-title');
+            var count = button.getAttribute('data-count');
+            if (targetTitle) targetTitle.textContent = title || '';
+            if (currentCount) {
+                currentCount.textContent = 'REPORTES ACUMULADOS ACTUALES: ' + (count || 0) + '/10';
+            }
+            if (form) form.action = form.getAttribute('data-base') + id + '/reportar';
+            modal.hidden = false;
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeReportModal = function () {
+            modal.hidden = true;
+            document.body.style.overflow = '';
+        };
+
+        if (modal) {
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) closeReportModal();
+            });
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && modal && !modal.hidden) closeReportModal();
+        });
+    })();
+</script>
+
+</body>
+</html>
