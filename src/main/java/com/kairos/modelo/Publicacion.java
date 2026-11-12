@@ -4,7 +4,7 @@ import com.kairos.enums.EstadoPublicacion;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -63,6 +63,8 @@ public class Publicacion {
     @JoinColumn(name = "subcategoria_id", nullable = false)
     private Subcategoria subcategoria;
 
+
+    
     @PrePersist
     public void prepararRegistro() {
         if (fechaCreacion == null) {
@@ -95,26 +97,7 @@ public class Publicacion {
         return imagenes.isEmpty() ? "/images/placeholder.svg" : imagenes.get(0);
     }
 
-    @Transient
-    public BigDecimal getAhorro() {
-        if (precioOriginal == null || precioOferta == null) {
-            return BigDecimal.ZERO;
-        }
-        BigDecimal ahorro = precioOriginal.subtract(precioOferta);
-        return ahorro.compareTo(BigDecimal.ZERO) > 0 ? ahorro : BigDecimal.ZERO;
-    }
 
-    @Transient
-    public int getPorcentajeDescuento() {
-        if (precioOriginal == null || precioOferta == null
-                || precioOriginal.compareTo(BigDecimal.ZERO) <= 0) {
-            return 0;
-        }
-        BigDecimal descuento = getAhorro()
-                .multiply(BigDecimal.valueOf(100))
-                .divide(precioOriginal, 0, RoundingMode.HALF_UP);
-        return descuento.intValue();
-    }
 
     @Transient
     public String getTiempoTranscurrido() {

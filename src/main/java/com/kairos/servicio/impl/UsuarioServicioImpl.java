@@ -28,7 +28,7 @@ public class UsuarioServicioImpl implements IUsuarioServicio {
         String nombre = dto.getNombreUsuario().trim();
         String correo = dto.getCorreo().trim().toLowerCase();
 
-        // 1. Validar unicidad de nombre de usuario y correo antes de persistir.
+        // valida que el nombre y el correo sean unicos
         if (usuarioRepositorio.existsByNombreUsuarioIgnoreCase(nombre)) {
             throw new OperacionNoAutorizadaException("El nombre de usuario ya está en uso.");
         }
@@ -36,7 +36,7 @@ public class UsuarioServicioImpl implements IUsuarioServicio {
             throw new OperacionNoAutorizadaException("El correo ya está registrado.");
         }
 
-        // 2. Todo registro público nace con rol USER.
+        //todo registro público nace con rol USER.
         Usuario usuario = new Usuario(nombre, correo, dto.getContrasena(), RolUsuario.USER);
         return usuarioRepositorio.save(usuario);
     }
@@ -55,7 +55,7 @@ public class UsuarioServicioImpl implements IUsuarioServicio {
                 .orElseThrow(() -> new OperacionNoAutorizadaException(
                         "Las credenciales introducidas no son correctas."));
 
-        // 2. Comparar la contraseña recibida con la almacenada.
+        //Comparar la contraseña recibida con la almacenada.
         if (!usuario.getContrasena().equals(contrasena)) {
             throw new OperacionNoAutorizadaException("Las credenciales introducidas no son correctas.");
         }
@@ -81,10 +81,6 @@ public class UsuarioServicioImpl implements IUsuarioServicio {
         return usuarioRepositorio.findAll();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public long contarUsuarios() {
-        return usuarioRepositorio.count();
-    }
+
 }
 

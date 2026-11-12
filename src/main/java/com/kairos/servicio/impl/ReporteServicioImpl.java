@@ -39,16 +39,16 @@ public class ReporteServicioImpl implements IReporteServicio {
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "Publicación no encontrada: " + publicacionId));
 
-        // 1. Un usuario solo puede reportar una vez la misma publicación.
+        //revisa si el usuario ya reporto la publicacion
         if (reporteRepositorio.existsByUsuarioIdAndPublicacionId(usuario.getId(), publicacionId)) {
             throw new OperacionNoAutorizadaException("Ya has reportado esta oferta anteriormente.");
         }
 
-        // 2. Persistir el reporte y sincronizar el contador denormalizado de la publicación.
+        //Persistir el reporte y sincronizar el contador denormalizado de la publicación.
         Reporte reporte = reporteRepositorio.save(new Reporte(usuario, publicacion));
         publicacion.setReportesCount(publicacion.getReportesCount() + 1);
 
-        // 3. Regla automatizada RF005: al alcanzar el umbral, la oferta desaparece del feed.
+        //Al alcanzar el maximo de reportes la publicacion desaparece
         if (publicacion.getReportesCount() >= UMBRAL_REPORTES
                 && publicacion.getEstado() == EstadoPublicacion.ACTIVA) {
             publicacion.setEstado(EstadoPublicacion.INACTIVA);

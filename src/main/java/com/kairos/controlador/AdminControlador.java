@@ -14,9 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Controlador del panel de administración: moderación, inhabilitación y borrado.
- */
+
 @Controller
 @RequestMapping("/admin")
 public class AdminControlador {
@@ -50,13 +48,7 @@ public class AdminControlador {
         model.addAttribute("estadoSeleccionado", filtro == null ? "TODAS" : filtro.name());
         model.addAttribute("estados", Arrays.asList(EstadoPublicacion.values()));
 
-        model.addAttribute("totalPublicaciones", publicacionServicio.contarTodas());
-        model.addAttribute("totalPendientes", publicacionServicio.contarPorEstado(EstadoPublicacion.PENDIENTE));
-        model.addAttribute("totalActivas", publicacionServicio.contarPorEstado(EstadoPublicacion.ACTIVA));
-        model.addAttribute("totalInactivas", publicacionServicio.contarPorEstado(EstadoPublicacion.INACTIVA));
-        model.addAttribute("totalVencidas", publicacionServicio.contarPorEstado(EstadoPublicacion.VENCIDA));
-        model.addAttribute("totalRechazadas", publicacionServicio.contarPorEstado(EstadoPublicacion.RECHAZADA));
-        model.addAttribute("totalUsuarios", usuarioServicio.contarUsuarios());
+    
 
         model.addAttribute("reportes", reporteServicio.listarTodos());
         model.addAttribute("usuarios", usuarioServicio.listarUsuarios());

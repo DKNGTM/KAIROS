@@ -61,31 +61,15 @@
                         <option value="precio-asc" th:selected="${orden == 'precio-asc'}">ORDEN: MENOR PRECIO</option>
                         <option value="precio-desc" th:selected="${orden == 'precio-desc'}">ORDEN: MAYOR PRECIO</option>
                     </select>
-                    <button class="btn btn--sm filter-apply" type="submit">[ APLICAR ]</button>
-                    <a class="filter-reset" th:href="@{/feed}">[ RESET ]</a>
+                    
+                    <a class=" btn btn--sm filter-apply filter-reset" th:href="@{/feed}">[ RESET ]</a>
                 </div>
-            </div>
-
-            <div class="subcat-deck" th:if="${categoriaSeleccionada != null and !#lists.isEmpty(subcategorias)}">
-                <span class="subcat-label">SUBCATEGORÍAS:</span>
-                <a class="subcat-chip"
-                   th:each="sub : ${subcategorias}"
-                   th:classappend="${subcategoriaSeleccionada != null and subcategoriaSeleccionada == sub.id} ? 'is-active'"
-                   th:href="@{/feed(categoria=${sub.categoria.id}, subcategoria=${sub.id}, q=${q}, orden=${orden})}"
-                   th:text="${sub.nombre}">
-                    Subcategoría
-                </a>
-                <a class="subcat-chip"
-                   th:if="${subcategoriaSeleccionada != null}"
-                   th:href="@{/feed(categoria=${categoriaSeleccionada}, q=${q}, orden=${orden})}">
-                    [ × QUITAR FILTRO ]
-                </a>
             </div>
         </form>
     </section>
 
     <!-- ========================================================
-         GRID PRINCIPAL
+         GRID PRINCIPAL // EDITAR QUE NO SALGAN ESCRITAS LAS PUBLICACIONES POR DEFECTO
          ======================================================== -->
     <section class="feed-section">
         <div class="feed-heading">
@@ -111,86 +95,61 @@
                              loading="lazy">
                     </a>
 
-                    <span class="discount-badge"
-                          th:if="${p.porcentajeDescuento > 0}"
-                          th:text="${'[-' + p.porcentajeDescuento + '%]'}">[-40%]</span>
+<!-- Badge de Porcentaje de Descuento -->
+    <span class="discount-badge"
+          th:if="${porcentajesDescuento != null and porcentajesDescuento.get(p.id) != null and porcentajesDescuento.get(p.id).doubleValue() > 0}"
+          th:text="${'[-' + porcentajesDescuento.get(p.id) + '%]'}">
+        [-40%]
+    </span>
 
-                    <span class="state-flag state-flag--active" th:if="${!p.vencida}">● ACTIVA</span>
-                    <span class="expired-ribbon" th:if="${p.vencida}"><span>[ VENCIDA / AGOTADA ]</span></span>
-                </div>
+    <span class="state-flag state-flag--active">● ACTIVA</span>
+</div>
 
-                <div class="deal-taxonomy">
-                    <span class="deal-taxonomy__cat"
-                          th:text="${p.categoria.nombre + ' / ' + p.subcategoria.nombre}">
-                        Electrónicos / Computadoras
-                    </span>
-                </div>
+<div class="deal-taxonomy">
+    <span class="deal-taxonomy__cat"
+          th:text="${p.categoria.nombre + ' / ' + p.subcategoria.nombre}">
+        Electrónicos / Computadoras
+    </span>
+</div>
 
-                <h3 class="deal-card__title">
-                    <a th:href="@{/publicacion/{id}(id=${p.id})}" th:text="${p.titulo}">
-                        Título de la oferta
-                    </a>
-                </h3>
+<h3 class="deal-card__title">
+    <a th:href="@{/publicacion/{id}(id=${p.id})}" th:text="${p.titulo}">
+        Título de la oferta
+    </a>
+</h3>
 
-                <div class="deal-card__prices">
-                    <span class="deal-card__price">
-                        <span th:text="${'$' + #numbers.formatDecimal(p.precioOferta, 1, 'COMMA', 2, 'POINT')}">$899.00</span>
-                        <small>USD</small>
-                    </span>
-                    <span class="deal-card__old"
-                          th:if="${p.precioOriginal != null}"
-                          th:text="${'$' + #numbers.formatDecimal(p.precioOriginal, 1, 'COMMA', 2, 'POINT')}">
-                        $1,959.00
-                    </span>
-                    <span class="deal-card__save"
-                          th:if="${p.ahorro.signum() > 0}"
-                          th:text="${'Ahorro: $' + #numbers.formatDecimal(p.ahorro, 1, 'COMMA', 2, 'POINT')}">
-                        Ahorro: $1,060
-                    </span>
-                </div>
+<div class="deal-card__prices">
+    <span class="deal-card__price">
+        <span th:text="${'$' + #numbers.formatDecimal(p.precioOferta, 1, 'COMMA', 2, 'POINT')}">$899.00</span>
+        <small>USD</small>
+    </span>
+    <span class="deal-card__old"
+          th:if="${p.precioOriginal != null}"
+          th:text="${'$' + #numbers.formatDecimal(p.precioOriginal, 1, 'COMMA', 2, 'POINT')}">
+        $1,959.00
+    </span>
+    <!-- Ahorro corregido usando el Map del servicio -->
+    <span class="deal-card__save"
+          th:if="${ahorros != null and ahorros.get(p.id) != null and ahorros.get(p.id).signum() > 0}"
+          th:text="${'Ahorro: $' + #numbers.formatDecimal(ahorros.get(p.id), 1, 'COMMA', 2, 'POINT')}">
+        Ahorro: $1,060
+    </span>
+</div>
 
-                <p class="deal-card__desc" th:text="${p.descripcion}">
-                    Descripción breve de la oferta.
-                </p>
+<p class="deal-card__desc" th:text="${p.descripcion}">
+    Descripción breve de la oferta.
+</p>
 
-                <div class="deal-card__footer">
-                    <div class="deal-card__meta">
-                        <span class="deal-card__author">
-                            <span th:text="${'@' + p.usuario.nombreUsuario}">@curador</span>
-                            <span class="metric__sep">·</span>
-                            <span class="deal-card__time" th:text="${p.tiempoTranscurrido}">Hace 14 min</span>
-                        </span>
+<div class="deal-card__footer">
+    <div class="deal-card__meta">
+        <span class="deal-card__author">
+            <span th:text="${ p.usuario.nombreUsuario}">@curador</span>
+           
+            
+        </span>
 
-                        <button class="report-trigger"
-                                type="button"
-                                th:if="${session.usuarioLogueado != null and !reportados.contains(p.id) and !p.vencida}"
-                                th:attr="data-id=${p.id},data-title=${p.titulo},data-count=${p.reportesCount}"
-                                onclick="openReportModal(this)"
-                                title="Reportar si el enlace caducó o el precio cambió">
-                            <span class="material-symbols-outlined" aria-hidden="true">flag</span>
-                            <span>Reportar</span>
-                        </button>
 
-                        <span class="report-trigger report-trigger--done"
-                              th:if="${session.usuarioLogueado != null and reportados.contains(p.id)}">
-                            <span class="material-symbols-outlined" aria-hidden="true">flag</span>
-                            <span>[ YA REPORTADO ]</span>
-                        </span>
-
-                        <a class="report-trigger report-trigger--login"
-                           th:if="${session.usuarioLogueado == null and !p.vencida}"
-                           th:href="@{/auth/login}"
-                           title="Inicia sesión para reportar esta oferta">
-                            <span class="material-symbols-outlined" aria-hidden="true">flag</span>
-                            <span>Reportar</span>
-                        </a>
-
-                        <span class="report-trigger report-trigger--done"
-                              th:if="${p.vencida}">
-                            Reportar
-                        </span>
-                    </div>
-
+    </div>
                     <div class="deal-card__actions">
                         <a class="deal-card__cta"
                            th:if="${!p.vencida}"
@@ -208,30 +167,26 @@
             </article>
         </div>
 
+
         <div class="feed-empty" th:if="${#lists.isEmpty(publicaciones)}">
             <div class="empty-state">
                 <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
-                <p class="empty-state__title">[ SIN RESULTADOS EN EL CIRCUITO ]</p>
+                <p class="empty-state__title">[ SIN RESULTADOS]</p>
                 <p class="empty-state__text">
                     No hay ofertas que coincidan con los filtros seleccionados. Prueba con otra
                     categoría, limpia la búsqueda o publica la primera oferta.
                 </p>
+
                 <a class="btn btn--primary btn--sm" th:href="@{/feed}">[ RESTABLECER FILTROS ]</a>
+
             </div>
         </div>
 
-        <div class="feed-terminal">
-            <span>
-                FIN DEL FEED
-            </span>
-            <div class="feed-terminal__actions">
-                <a class="btn btn--sm btn--outline" th:href="@{/publicacion/crear}">[ + PUBLICAR OFERTA ]</a>
-            </div>
-        </div>
+
     </section>
 </main>
 
-<footer th:replace="~{fragmentos/footer :: footer}"></footer>
+
 
 
 <div class="modal" id="report-modal" hidden>
@@ -244,46 +199,7 @@
             <button class="modal__close" type="button" onclick="closeReportModal()" aria-label="Cerrar">✕</button>
         </div>
 
-        <form id="report-form"
-              method="post"
-              th:action="@{/publicacion/0/reportar}"
-              th:attr="data-base=@{/publicacion/}">
-            <div class="modal__body">
-                <div>
-                    <span class="eyebrow">OBJETO A AUDITAR:</span>
-                    <p class="modal__target" id="report-target-title">Título de la oferta</p>
-                </div>
 
-                <div class="stack-sm">
-                    <span class="eyebrow">MOTIVO DEL REPORTE:</span>
-                    <label class="report-option">
-                        <input type="radio" name="motivo" value="precio" checked>
-                        <span>Precio desactualizado / Ya no coincide con la tienda</span>
-                    </label>
-                    <label class="report-option">
-                        <input type="radio" name="motivo" value="cupon">
-                        <span>Cupón vencido o agotado</span>
-                    </label>
-                    <label class="report-option">
-                        <input type="radio" name="motivo" value="enlace">
-                        <span>Enlace roto o producto sin existencias</span>
-                    </label>
-                    <label class="report-option">
-                        <input type="radio" name="motivo" value="spam">
-                        <span>Publicación spam o sospecha de fraude</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="modal__actions">
-                <button class="btn btn--ghost btn--sm" type="button" onclick="closeReportModal()">
-                    [ CANCELAR ]
-                </button>
-                <button class="btn btn--danger btn--sm" type="submit">
-                    CONFIRMAR REPORTE
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 

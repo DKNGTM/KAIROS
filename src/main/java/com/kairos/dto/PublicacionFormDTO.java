@@ -7,9 +7,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DTO de entrada para el formulario de publicación de una oferta.
- */
+
 public class PublicacionFormDTO {
 
     @NotBlank(message = "El título de la oferta es obligatorio.")

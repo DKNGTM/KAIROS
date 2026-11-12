@@ -13,6 +13,8 @@ import com.kairos.servicio.IAlmacenamientoServicio;
 import com.kairos.servicio.ICategoriaServicio;
 import com.kairos.servicio.IPublicacionServicio;
 import com.kairos.servicio.IReporteServicio;
+import com.kairos.servicio.PrecioServicio;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +30,18 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
     private final ICategoriaServicio categoriaServicio;
     private final IReporteServicio reporteServicio;
     private final IAlmacenamientoServicio almacenamientoServicio;
+    private final PrecioServicio precioServicio;
 
     public PublicacionServicioImpl(PublicacionRepositorio publicacionRepositorio,
                                    ICategoriaServicio categoriaServicio,
                                    IReporteServicio reporteServicio,
-                                   IAlmacenamientoServicio almacenamientoServicio) {
+                                   IAlmacenamientoServicio almacenamientoServicio,
+                                    PrecioServicio precioServicio) {
         this.publicacionRepositorio = publicacionRepositorio;
         this.categoriaServicio = categoriaServicio;
         this.reporteServicio = reporteServicio;
         this.almacenamientoServicio = almacenamientoServicio;
+        this.precioServicio = precioServicio;
     }
 
     @Override
@@ -62,13 +67,18 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
                 .comparing(Publicacion::getFechaCreacion,
                         Comparator.nullsLast(Comparator.reverseOrder()));
 
-        Comparator<Publicacion> comparador = switch (orden == null ? "" : orden) {
+        Comparator<Publicacion> comparador = 
+        
+                switch (orden == null ? "" : orden) {
+
             case "precio-asc" -> Comparator.comparing(Publicacion::getPrecioOferta,
                     Comparator.nullsLast(Comparator.naturalOrder()));
+
             case "precio-desc" -> Comparator.comparing(Publicacion::getPrecioOferta,
                     Comparator.nullsLast(Comparator.reverseOrder()));
+                    
             case "descuento" -> Comparator
-                    .comparingInt(Publicacion::getPorcentajeDescuento)
+                    .comparingInt((Publicacion publicacion) -> precioServicio.calcularPorcentajeDescuento(publicacion))
                     .reversed()
                     .thenComparing(porFecha);
             default -> porFecha;
@@ -84,22 +94,7 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Publicación no encontrada: " + id));
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Publicacion> obtenerRelacionadas(Publicacion publicacion, int limite) {
-        if (publicacion == null || publicacion.getCategoria() == null) {
-            return List.of();
-        }
-        Long categoriaId = publicacion.getCategoria().getId();
-        return publicacionRepositorio
-                .findByEstadoOrderByFechaCreacionDesc(EstadoPublicacion.ACTIVA)
-                .stream()
-                .filter(p -> !Objects.equals(p.getId(), publicacion.getId()))
-                .filter(p -> p.getCategoria() != null
-                        && Objects.equals(p.getCategoria().getId(), categoriaId))
-                .limit(Math.max(limite, 0))
-                .collect(Collectors.toList());
-    }
+
 
     @Override
     @Transactional
@@ -126,7 +121,7 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
-        // 3. Crear la publicación en estado PENDIENTE para revisión del administrador
+        // crea la publicacion para que la revise el administrador
         Publicacion publicacion = new Publicacion();
         publicacion.setTitulo(dto.getTitulo().trim());
         publicacion.setPrecioOferta(dto.getPrecioOferta());
@@ -186,10 +181,10 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
     public void reactivar(Long publicacionId) {
         Publicacion publicacion = obtenerPorId(publicacionId);
 
-        // 1. Limpiar el historial de reportes para que el contador vuelva a 0 de forma coherente.
+        // limpia el historial de reporte
         reporteServicio.eliminarReportesDePublicacion(publicacionId);
 
-        // 2. Devolver la oferta al feed público.
+        // muestra la oferta en el feed público.
         publicacion.setEstado(EstadoPublicacion.ACTIVA);
         publicacion.setReportesCount(0);
         publicacionRepositorio.save(publicacion);
@@ -200,15 +195,15 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
     public void eliminar(Long publicacionId) {
         Publicacion publicacion = obtenerPorId(publicacionId);
 
-        // 1. Borrar primero los reportes para respetar la integridad referencial.
         reporteServicio.eliminarReportesDePublicacion(publicacionId);
 
-        // 2. Borrar los archivos físicos asociados a la oferta.
+        //borra las imagenes 
         publicacion.getListaImagenes().forEach(almacenamientoServicio::eliminarArchivo);
 
-        // 3. Hard delete de la publicación
         publicacionRepositorio.delete(publicacion);
     }
+
+
 
     @Override
     @Transactional(readOnly = true)
@@ -228,16 +223,6 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
         return publicacionRepositorio.findByUsuarioIdOrderByFechaCreacionDesc(usuarioId);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public long contarTodas() {
-        return publicacionRepositorio.count();
-    }
 
-    @Override
-    @Transactional(readOnly = true)
-    public long contarPorEstado(EstadoPublicacion estado) {
-        return publicacionRepositorio.countByEstado(estado);
-    }
 }
 

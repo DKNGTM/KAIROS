@@ -13,9 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Controlador de autenticación: login, registro y logout mediante {@link HttpSession}.
- */
+
 @Controller
 @RequestMapping("/auth")
 public class AuthControlador {
@@ -28,6 +26,7 @@ public class AuthControlador {
 
     @GetMapping("/login")
     public String mostrarLogin(HttpSession session, Model model) {
+
         if (session.getAttribute("usuarioLogueado") != null) {
             return "redirect:/feed";
         }
@@ -43,10 +42,10 @@ public class AuthControlador {
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) {
         try {
-            // 1. Autenticar con nombre de usuario o correo.
+            
             Usuario usuario = usuarioServicio.autenticar(identificador, contrasena);
 
-            // 2. Guardar la sesión y el indicador de administrador.
+            
             session.setAttribute("usuarioLogueado", usuario);
             session.setAttribute("esAdmin", usuario.getRol() == RolUsuario.ADMIN);
 
@@ -89,6 +88,7 @@ public class AuthControlador {
             redirectAttributes.addFlashAttribute("mensaje",
                     "Cuenta creada. Bienvenido a Kairos, @" + usuario.getNombreUsuario() + ".");
             return "redirect:/feed";
+            
         } catch (OperacionNoAutorizadaException ex) {
             resultado.reject("registroError", ex.getMessage());
             return "auth/registro";

@@ -16,41 +16,13 @@
 <div th:replace="~{fragmentos/header :: header('admin')}"></div>
 
 <main class="admin-shell">
-    <!-- head -->
+    
     <div class="admin-head">
         <div>
             <h1 class="admin-title">PANEL DE ADMINISTRACIÓN</h1>
         </div>
     </div>
 
-    <!-- metricas -->
-    <section class="stat-grid" aria-label="Métricas de moderación">
-        <div class="stat-card">
-            <span class="stat-card__label">Total publicaciones</span>
-            <span class="stat-card__value" th:text="${totalPublicaciones}">0</span>
-            <span class="stat-card__hint">Histórico completo</span>
-        </div>
-        <div class="stat-card stat-card--pending">
-            <span class="stat-card__label">Pendientes</span>
-            <span class="stat-card__value" th:text="${totalPendientes}">0</span>
-            <span class="stat-card__hint">Requieren revisión</span>
-        </div>
-        <div class="stat-card stat-card--active">
-            <span class="stat-card__label">Activas en feed</span>
-            <span class="stat-card__value" th:text="${totalActivas}">0</span>
-            <span class="stat-card__hint">Visibles al público</span>
-        </div>
-        <div class="stat-card stat-card--inactive">
-            <span class="stat-card__label">Inhabilitadas</span>
-            <span class="stat-card__value" th:text="${totalInactivas}">0</span>
-            <span class="stat-card__hint">Inhabilitadas</span>
-        </div>
-        <div class="stat-card stat-card--expired">
-            <span class="stat-card__label">Vencidas</span>
-            <span class="stat-card__value" th:text="${totalVencidas}">0</span>
-            <span class="stat-card__hint">Ya vencidas</span>
-        </div>
-    </section>
 
     <!-- filtros -->
     <div class="admin-tabs" aria-label="Filtrar por estado">
@@ -133,19 +105,19 @@
                         <form th:if="${p.estado.name() != 'ACTIVA'}"
                               th:action="@{/admin/publicacion/{id}/aprobar(id=${p.id})}"
                               method="post">
-                            <button class="action-btn action-btn--ok" type="submit" title="Aprobar (RF001)">Aprobar</button>
+                            <button class="action-btn action-btn--ok" type="submit" title="Aprobar">Aprobar</button>
                         </form>
 
                         <form th:if="${p.estado.name() == 'PENDIENTE'}"
                               th:action="@{/admin/publicacion/{id}/rechazar(id=${p.id})}"
                               method="post">
-                            <button class="action-btn action-btn--danger" type="submit" title="Rechazar (RF001)">Rechazar</button>
+                            <button class="action-btn action-btn--danger" type="submit" title="Rechazar">Rechazar</button>
                         </form>
 
                         <form th:if="${p.estado.name() == 'ACTIVA'}"
                               th:action="@{/admin/publicacion/{id}/vencer(id=${p.id})}"
                               method="post">
-                            <button class="action-btn action-btn--warn" type="submit" title="Marcar vencida (RF004)">Vencer</button>
+                            <button class="action-btn action-btn--warn" type="submit" title="Marcar vencida">Vencer</button>
                         </form>
 
                         <form th:if="${p.estado.name() == 'ACTIVA'}"

@@ -9,6 +9,8 @@ import com.kairos.modelo.Usuario;
 import com.kairos.servicio.ICategoriaServicio;
 import com.kairos.servicio.IPublicacionServicio;
 import com.kairos.servicio.IReporteServicio;
+import com.kairos.servicio.PrecioServicio;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -27,13 +29,16 @@ public class PublicacionControlador {
     private final IPublicacionServicio publicacionServicio;
     private final ICategoriaServicio categoriaServicio;
     private final IReporteServicio reporteServicio;
+    private final PrecioServicio precioServicio;
 
     public PublicacionControlador(IPublicacionServicio publicacionServicio,
                                    ICategoriaServicio categoriaServicio,
-                                   IReporteServicio reporteServicio) {
+                                   IReporteServicio reporteServicio,
+                                    PrecioServicio precioServicio) {
         this.publicacionServicio = publicacionServicio;
         this.categoriaServicio = categoriaServicio;
         this.reporteServicio = reporteServicio;
+        this.precioServicio = precioServicio;
     }
 
     @GetMapping("/crear")
@@ -107,12 +112,17 @@ public class PublicacionControlador {
                 && reporteServicio.yaReporto(publicacion.getId(), usuario.getId());
 
         model.addAttribute("publicacion", publicacion);
-        model.addAttribute("relacionadas", publicacionServicio.obtenerRelacionadas(publicacion, 3));
+
         model.addAttribute("esAutor", esAutor);
         model.addAttribute("esAdmin", esAdmin);
         model.addAttribute("reportado", reportado);
         model.addAttribute("puedeReportar", usuario != null && !reportado
                 && publicacion.getEstado() == EstadoPublicacion.ACTIVA);
+
+
+        model.addAttribute("ahorro", precioServicio.calcularAhorro(publicacion));
+        model.addAttribute("porcentajeDescuento",
+                precioServicio.calcularPorcentajeDescuento(publicacion));
 
         return "publicacion/detalle";
     }
