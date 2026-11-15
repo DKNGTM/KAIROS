@@ -46,11 +46,10 @@
             <tr>
                 <th>Oferta</th>
                 <th>Autor</th>
-                <th>Taxonomía</th>
+                <th>Categoría</th>
                 <th>Precio</th>
                 <th>Estado</th>
                 <th>Reportes</th>
-                <th>Fecha</th>
                 <th>Acciones</th>
             </tr>
             </thead>
@@ -77,10 +76,10 @@
                 </td>
 
                 <td class="cell-price">
-                    <span th:text="${'$' + #numbers.formatDecimal(p.precioOferta, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+                    <span th:text="${'$' + #numbers.formatDecimal(p.precioOferta, 1, 'POINT', 0, 'COMMA')}">$0</span>
                     <s th:if="${p.precioOriginal != null}"
-                       th:text="${'$' + #numbers.formatDecimal(p.precioOriginal, 1, 'COMMA', 2, 'POINT')}">
-                        $0.00
+                        th:text="${'$' + #numbers.formatDecimal(p.precioOriginal, 1, 'POINT', 0, 'COMMA')}">
+                        $0
                     </s>
                 </td>
 
@@ -97,8 +96,6 @@
                     th:text="${p.reportesCount + '/10'}">
                     0/10
                 </td>
-
-                <td class="cell-date" th:text="${p.fechaFormateada}">01/01/2026</td>
 
                 <td>
                     <div class="actions-cell">

@@ -98,15 +98,15 @@
                 <div>
                     <span class="price-label">Precio actual oferta</span>
                     <span class="price-current">
-                        <span th:text="${'$' + #numbers.formatDecimal(publicacion.precioOferta, 1, 'COMMA', 2, 'POINT')}">$899.00</span>
-                        <small>USD</small>
+                        <span th:text="${'$' + #numbers.formatDecimal(publicacion.precioOferta, 1, 'POINT', 0, 'COMMA')}">$3.600.000</span>
+                        <small>COP</small>
                     </span>
                 </div>
                 <div class="price-meta" th:if="${publicacion.precioOriginal != null}">
                     <span class="price-label">Precio lista</span>
                     <span class="price-old"
-                          th:text="${'$' + #numbers.formatDecimal(publicacion.precioOriginal, 1, 'COMMA', 2, 'POINT') + ' USD'}">
-                        $1,959.00 USD
+                        th:text="${'$' + #numbers.formatDecimal(publicacion.precioOriginal, 1, 'POINT', 0, 'COMMA') + ' COP'}">
+                        $7.840.000 COP
                     </span>
                 </div>
             </div>
@@ -115,13 +115,13 @@
 
             <div class="price-row">
                 <span class="price-save"
-                      th:if="${ahorro != null and ahorro.signum() > 0}"
-                      th:text="${'AHORRO: $' + #numbers.formatDecimal(ahorro, 1, 'COMMA', 2, 'POINT')}">
-                    AHORRO: $1,060
+                    th:if="${ahorro != null and ahorro.signum() > 0}"
+                    th:text="${'AHORRO: $' + #numbers.formatDecimal(ahorro, 1, 'POINT', 0, 'COMMA')}">
+                    AHORRO: $4.240.000
                 </span>
                 <span class="badge badge--success"
-                      th:if="${porcentajeDescuento != null and porcentajeDescuento > 0}"
-                      th:text="${'-' + porcentajeDescuento + '% DTO'}">
+                    th:if="${porcentajeDescuento != null and porcentajeDescuento > 0}"
+                    th:text="${'-' + porcentajeDescuento + '% DTO'}">
                     -40% DTO
                 </span>
             </div>

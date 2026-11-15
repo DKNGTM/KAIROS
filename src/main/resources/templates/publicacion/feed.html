@@ -74,7 +74,7 @@
     <section class="feed-section">
         <div class="feed-heading">
             <div class="feed-heading__title"
-                 th:text="${categoriaActual != null ? 'TAXONOMÍA // ' + #strings.toUpperCase(categoriaActual.nombre) : 'FEED PRINCIPAL // TODAS LAS CATEGORÍAS'}">
+                 th:text="${categoriaActual != null ? 'CATEGORÍA // ' + #strings.toUpperCase(categoriaActual.nombre) : 'FEED PRINCIPAL // TODAS LAS CATEGORÍAS'}">
                 FEED PRINCIPAL // TODAS LAS CATEGORÍAS
             </div>
         </div>
@@ -120,19 +120,18 @@
 
 <div class="deal-card__prices">
     <span class="deal-card__price">
-        <span th:text="${'$' + #numbers.formatDecimal(p.precioOferta, 1, 'COMMA', 2, 'POINT')}">$899.00</span>
-        <small>USD</small>
+        <span th:text="${'$' + #numbers.formatDecimal(p.precioOferta, 1, 'POINT', 0, 'COMMA')}">$3.600.000</span>
+        <small>COP</small>
     </span>
     <span class="deal-card__old"
-          th:if="${p.precioOriginal != null}"
-          th:text="${'$' + #numbers.formatDecimal(p.precioOriginal, 1, 'COMMA', 2, 'POINT')}">
-        $1,959.00
+        th:if="${p.precioOriginal != null}"
+        th:text="${'$' + #numbers.formatDecimal(p.precioOriginal, 1, 'POINT', 0, 'COMMA')}">
+        $7.840.000
     </span>
-    <!-- Ahorro corregido usando el Map del servicio -->
     <span class="deal-card__save"
-          th:if="${ahorros != null and ahorros.get(p.id) != null and ahorros.get(p.id).signum() > 0}"
-          th:text="${'Ahorro: $' + #numbers.formatDecimal(ahorros.get(p.id), 1, 'COMMA', 2, 'POINT')}">
-        Ahorro: $1,060
+        th:if="${ahorros != null and ahorros.get(p.id) != null and ahorros.get(p.id).signum() > 0}"
+        th:text="${'Ahorro: $' + #numbers.formatDecimal(ahorros.get(p.id), 1, 'POINT', 0, 'COMMA')}">
+        Ahorro: $4.240.000
     </span>
 </div>
 

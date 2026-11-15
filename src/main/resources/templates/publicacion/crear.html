@@ -118,7 +118,7 @@
                     <div class="field">
                         <label class="field__label" for="currency-select">Moneda</label>
                         <select class="select" id="currency-select" name="moneda" disabled>
-                            <option value="USD" selected>USD ($)</option>
+                            <option value="COP" selected>COP ($)</option>
                         </select>
                     </div>
 
@@ -128,12 +128,12 @@
                             <span class="req">* REQUERIDO</span>
                         </label>
                         <input class="input input--number"
-                               id="price-offer"
-                               type="number"
-                               step="0.01"
-                               min="0.01"
-                               th:field="*{precioOferta}"
-                               placeholder="1699.00">
+                            id="price-offer"
+                            type="number"
+                            step="50"
+                            min="50"
+                            th:field="*{precioOferta}"
+                            placeholder="1699000">
                         <p class="field__error" th:if="${#fields.hasErrors('precioOferta')}" th:errors="*{precioOferta}">
                             Precio no válido.
                         </p>
@@ -145,12 +145,12 @@
                             <span>OPCIONAL</span>
                         </label>
                         <input class="input input--number"
-                               id="price-original"
-                               type="number"
-                               step="0.01"
-                               min="0"
-                               th:field="*{precioOriginal}"
-                               placeholder="2199.00">
+                            id="price-original"
+                            type="number"
+                            step="50"
+                            min="50"
+                            th:field="*{precioOriginal}"
+                            placeholder="2199000">
                         <p class="field__error" th:if="${#fields.hasErrors('precioOriginal')}" th:errors="*{precioOriginal}">
                             Precio no válido.
                         </p>
@@ -162,15 +162,15 @@
                 </p>
 
                 <div class="field-inline">
-                    <span class="savings-badge" id="savings-value">[-$0.00 (-0% DTO)]</span>
+                    <span class="savings-badge" id="savings-value">[-$0 (-0% DTO)]</span>
                 </div>
             </div>
         </section>
 
-        <!-- Taxonomía -->
+        <!-- Categorias -->
         <section class="publish-section">
             <div class="publish-section__head">
-                <h2 class="publish-section__title">TAXONOMÍA</h2>
+                <h2 class="publish-section__title">CATEGORÍA</h2>
             </div>
 
             <div class="form-grid form-grid--2">
@@ -290,7 +290,7 @@
             var original = parseFloat(priceOriginal && priceOriginal.value) || 0;
             var diferencia = Math.max(original - oferta, 0);
             var porcentaje = original > 0 ? Math.round((diferencia / original) * 100) : 0;
-            savingsValue.textContent = '[-$' + diferencia.toFixed(2) + ' (-' + porcentaje + '% DTO)]';
+            savingsValue.textContent = '[-$' + Math.round(diferencia).toLocaleString('es-CO') + ' (-' + porcentaje + '% DTO)]';
         }
 
         if (priceOffer) priceOffer.addEventListener('input', actualizarAhorro);

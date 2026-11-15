@@ -1,11 +1,18 @@
 package com.kairos.dto;
 
-import jakarta.validation.constraints.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 
 public class PublicacionFormDTO {
@@ -15,12 +22,12 @@ public class PublicacionFormDTO {
     private String titulo;
 
     @NotNull(message = "Debes indicar el precio de la oferta.")
-    @DecimalMin(value = "0.01", message = "El precio de la oferta debe ser mayor que cero.")
-    @Digits(integer = 10, fraction = 2, message = "El precio admite como máximo dos decimales.")
+    @DecimalMin(value = "50", message = "El precio de la oferta debe ser mayor que cincuenta pesos.")
+    @Digits(integer = 10, fraction = 0, message = "El precio debe ser un valor entero en pesos.")
     private BigDecimal precioOferta;
 
-    @DecimalMin(value = "0.00", message = "El precio original no puede ser negativo.")
-    @Digits(integer = 10, fraction = 2, message = "El precio admite como máximo dos decimales.")
+    @DecimalMin(value = "50", message = "El precio original no puede ser negativo.")
+    @Digits(integer = 10, fraction = 0, message = "El precio debe ser un valor entero en pesos.")
     private BigDecimal precioOriginal;
 
     @NotBlank(message = "El enlace a la oferta es obligatorio.")

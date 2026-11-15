@@ -268,13 +268,6 @@ a.cell-title:hover {
     color: var(--status-pending);
 }
 
-.cell-date {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    color: var(--outline);
-    white-space: nowrap;
-}
-
 .actions-cell {
     display: flex;
     align-items: center;
