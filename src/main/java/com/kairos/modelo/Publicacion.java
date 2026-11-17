@@ -5,15 +5,10 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Oferta publicada por un usuario de la comunidad.
- */
+
 @Entity
 @Table(name = "publicaciones")
 public class Publicacion {
@@ -41,9 +36,6 @@ public class Publicacion {
     @Column(name = "imagenes_urls", columnDefinition = "TEXT")
     private String imagenesUrls;
 
-    @Column(name = "fecha_creacion", nullable = false)
-    private LocalDateTime fechaCreacion;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EstadoPublicacion estado = EstadoPublicacion.PENDIENTE;
@@ -67,9 +59,6 @@ public class Publicacion {
     
     @PrePersist
     public void prepararRegistro() {
-        if (fechaCreacion == null) {
-            fechaCreacion = LocalDateTime.now();
-        }
         if (reportesCount < 0) {
             reportesCount = 0;
         }
@@ -99,37 +88,9 @@ public class Publicacion {
 
 
 
-    @Transient
-    public String getTiempoTranscurrido() {
-        if (fechaCreacion == null) {
-            return "AHORA";
-        }
-        Duration transcurrido = Duration.between(fechaCreacion, LocalDateTime.now());
-        long minutos = Math.max(transcurrido.toMinutes(), 0);
 
-        if (minutos < 1) {
-            return "AHORA";
-        }
-        if (minutos < 60) {
-            return "Hace " + minutos + " min";
-        }
-        long horas = minutos / 60;
-        if (horas < 24) {
-            return "Hace " + horas + "h " + (minutos % 60) + "m";
-        }
-        long dias = horas / 24;
-        if (dias < 7) {
-            return "Hace " + dias + "d";
-        }
-        return fechaCreacion.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    }
 
-    @Transient
-    public String getFechaFormateada() {
-        return fechaCreacion == null
-                ? "—"
-                : fechaCreacion.format(DateTimeFormatter.ofPattern("dd/MM/yyyy · HH:mm"));
-    }
+
 
     @Transient
     public boolean isVencida() {
@@ -190,14 +151,6 @@ public class Publicacion {
 
     public void setImagenesUrls(String imagenesUrls) {
         this.imagenesUrls = imagenesUrls;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
     }
 
     public EstadoPublicacion getEstado() {

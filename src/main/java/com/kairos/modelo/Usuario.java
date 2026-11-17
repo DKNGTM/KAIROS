@@ -3,9 +3,7 @@ package com.kairos.modelo;
 import com.kairos.enums.RolUsuario;
 import jakarta.persistence.*;
 
-/**
- * Entidad que representa a una persona registrada en Kairos.
- */
+
 @Entity
 @Table(
         name = "usuarios",
@@ -43,7 +41,6 @@ public class Usuario {
         this.rol = rol;
     }
 
-    /** Iniciales usadas por los avatares de la interfaz. */
     @Transient
     public String getIniciales() {
         if (nombreUsuario == null || nombreUsuario.isBlank()) {

@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Configuración MVC. Expone el directorio físico de imágenes subidas bajo la ruta
- * pública {@code /uploads/**} para que las ofertas puedan servirlas desde Thymeleaf.
+ * Configuración MVC. pone el directorio de imágenes subidas bajo la ruta
+ * pública {@code /uploads/**} para que las ofertas puedan servirlas desde Thymeleaf
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

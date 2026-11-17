@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Categoría principal de la taxonomía de ofertas.
- */
+
 @Entity
 @Table(name = "categorias")
 public class Categoria {

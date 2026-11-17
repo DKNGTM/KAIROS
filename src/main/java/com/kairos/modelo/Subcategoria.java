@@ -2,9 +2,7 @@ package com.kairos.modelo;
 
 import jakarta.persistence.*;
 
-/**
- * Subcategoría dependiente de una {@link Categoria} principal.
- */
+
 @Entity
 @Table(
         name = "subcategorias",

@@ -1,5 +1,12 @@
 package com.kairos.config;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
 import com.kairos.enums.EstadoPublicacion;
 import com.kairos.enums.RolUsuario;
 import com.kairos.modelo.Categoria;
@@ -10,13 +17,6 @@ import com.kairos.repositorio.CategoriaRepositorio;
 import com.kairos.repositorio.PublicacionRepositorio;
 import com.kairos.repositorio.SubcategoriaRepositorio;
 import com.kairos.repositorio.UsuarioRepositorio;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Component
 public class DatosIniciales implements CommandLineRunner {
@@ -122,7 +122,6 @@ public class DatosIniciales implements CommandLineRunner {
         Subcategoria smartphones = buscarSubcategoria("Smartphones & Accesorios", electronicos.getId());
         Subcategoria cocina = buscarSubcategoria("Pequeños Electrodomésticos de Cocina", electrodomesticos.getId());
 
-        LocalDateTime ahora = LocalDateTime.now();
 
         publicacionRepositorio.save(crearPublicacion(
                 "ThinkPad Carbon X1 Gen 11 - Core i7 1365U, 32GB LPDDR5, 1TB SSD NVMe",
@@ -131,7 +130,7 @@ public class DatosIniciales implements CommandLineRunner {
                 "Edición empresarial certificada. Incluye garantía premier de 3 años onsite. "
                         + "Descuento aplicado directamente en carrito con cupón de liquidación.",
                 "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80",
-                EstadoPublicacion.ACTIVA, curador, electronicos, laptops, ahora.minusMinutes(14)));
+                EstadoPublicacion.ACTIVA, curador, electronicos, laptops));
 
         publicacionRepositorio.save(crearPublicacion(
                 "All Products Pack Anual - Licencia Comercial Completa 1 Año",
@@ -140,7 +139,7 @@ public class DatosIniciales implements CommandLineRunner {
                 "Promoción para desarrolladores independientes y startups. Válido para renovación "
                         + "o cuenta nueva introduciendo el cupón en pasarela.",
                 "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80",
-                EstadoPublicacion.ACTIVA, kernel, software, productividad, ahora.minusMinutes(42)));
+                EstadoPublicacion.ACTIVA, kernel, software, productividad));
 
         publicacionRepositorio.save(crearPublicacion(
                 "Roborock S8 Pro Ultra Robot Aspirador con Base de Autovaciado",
@@ -149,7 +148,7 @@ public class DatosIniciales implements CommandLineRunner {
                 "Unidad con base de autovaciado y mapeo LiDAR. Stock limitado en almacén central. "
                         + "Verifica la disponibilidad antes de finalizar la compra.",
                 "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=1200&q=80",
-                EstadoPublicacion.ACTIVA, curador, electrodomesticos, aspiradoras, ahora.minusHours(1)));
+                EstadoPublicacion.ACTIVA, curador, electrodomesticos, aspiradoras));
 
         publicacionRepositorio.save(crearPublicacion(
                 "PlayStation 5 Slim Digital Chassis + 2 Mandos DualSense Midnight",
@@ -158,7 +157,7 @@ public class DatosIniciales implements CommandLineRunner {
                 "Oferta flash de medianoche expirada. Stock liquidado en menos de 18 minutos "
                         + "en almacén central.",
                 "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=1200&q=80",
-                EstadoPublicacion.VENCIDA, nexus, electronicos, consolas, ahora.minusHours(3)));
+                EstadoPublicacion.VENCIDA, nexus, electronicos, consolas));
 
         publicacionRepositorio.save(crearPublicacion(
                 "Google Pixel 8 Pro 256GB Obsidian - Libre Internacional + Buds Pro",
@@ -167,7 +166,7 @@ public class DatosIniciales implements CommandLineRunner {
                 "Empaque nuevo con sello de fábrica intacto. Envío internacional bonificado "
                         + "aplicando código en checkout.",
                 "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1200&q=80",
-                EstadoPublicacion.ACTIVA, nexus, electronicos, smartphones, ahora.minusMinutes(75)));
+                EstadoPublicacion.ACTIVA, nexus, electronicos, smartphones));
 
         publicacionRepositorio.save(crearPublicacion(
                 "Breville Barista Touch Impress - Cafetera Espresso Control PID",
@@ -176,9 +175,9 @@ public class DatosIniciales implements CommandLineRunner {
                 "Precio mínimo histórico en España. Sistema de dosificación asistida y "
                         + "preinfusión digital de baja presión.",
                 "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=1200&q=80",
-                EstadoPublicacion.ACTIVA, caffeine, electrodomesticos, cocina, ahora.minusMinutes(125)));
+                EstadoPublicacion.ACTIVA, caffeine, electrodomesticos, cocina));
 
-        // Publicación pendiente para demostrar el flujo de moderación del administrador (RF001).
+
         publicacionRepositorio.save(crearPublicacion(
                 "Samsung Odyssey G9 49\" QHD 240Hz - Monitor Ultrawide Curvo",
                 "4800000", "7200000",
@@ -186,7 +185,7 @@ public class DatosIniciales implements CommandLineRunner {
                 "Monitor ultrawide de 49 pulgadas con panel QLED y 240 Hz. Envío gratuito "
                         + "con garantía oficial de 3 años.",
                 "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=1200&q=80",
-                EstadoPublicacion.PENDIENTE, kernel, electronicos, laptops, ahora.minusMinutes(8)));
+                EstadoPublicacion.PENDIENTE, kernel, electronicos, laptops));
     }
 
     private Subcategoria buscarSubcategoria(String nombre, Long categoriaId) {
@@ -197,8 +196,8 @@ public class DatosIniciales implements CommandLineRunner {
 
     private Publicacion crearPublicacion(String titulo, String oferta, String original, String url,
                                          String descripcion, String imagen, EstadoPublicacion estado,
-                                         Usuario autor, Categoria categoria, Subcategoria subcategoria,
-                                         LocalDateTime fecha) {
+                                         Usuario autor, Categoria categoria, Subcategoria subcategoria)
+                                        {
         Publicacion publicacion = new Publicacion();
         publicacion.setTitulo(titulo);
         publicacion.setPrecioOferta(new BigDecimal(oferta));
@@ -211,7 +210,6 @@ public class DatosIniciales implements CommandLineRunner {
         publicacion.setUsuario(autor);
         publicacion.setCategoria(categoria);
         publicacion.setSubcategoria(subcategoria);
-        publicacion.setFechaCreacion(fecha);
         return publicacion;
     }
 }

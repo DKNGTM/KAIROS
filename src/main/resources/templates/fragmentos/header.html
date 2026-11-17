@@ -10,7 +10,8 @@
 
 
         <a class="brand" th:href="@{/feed}" aria-label="Kairos, ir al feed">
-            <span class="brand__mark">K</span>
+            <img src="/images/icons8-hourglass-100.png" alt="icono kairos" width="30" height="30">
+            <!--<span class="brand__mark">K</span>-->
             <span class="brand__text">
                 KAIROS
             </span>
@@ -35,7 +36,7 @@
         <div class="nav-user">
             <th:block th:if="${session.usuarioLogueado != null}">
                 <a class="user-chip" th:href="@{/feed}" th:title="${session.usuarioLogueado.correo}">
-                    <span class="user-chip__avatar" th:text="${session.usuarioLogueado.iniciales}">SH</span>
+                    <!--<span class="user-chip__avatar" th:text="${session.usuarioLogueado.iniciales}">SH</span>-->
                     <span th:text="${'@' + session.usuarioLogueado.nombreUsuario}">@curador</span>
                 </a>
                 <form class="logout-form" th:action="@{/auth/logout}" method="post">

@@ -75,13 +75,13 @@ public class ReporteServicioImpl implements IReporteServicio {
     @Override
     @Transactional(readOnly = true)
     public List<Reporte> listarTodos() {
-        return reporteRepositorio.findAllByOrderByFechaReporteDesc();
+        return reporteRepositorio.findAllByOrderByIdDesc();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Reporte> listarPorPublicacion(Long publicacionId) {
-        return reporteRepositorio.findByPublicacionIdOrderByFechaReporteDesc(publicacionId);
+        return reporteRepositorio.findByPublicacionIdOrderByIdDesc(publicacionId);
     }
 
     @Override

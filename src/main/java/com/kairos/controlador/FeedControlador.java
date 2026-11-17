@@ -26,7 +26,6 @@ public class FeedControlador {
 
     private final IPublicacionServicio publicacionServicio;
     private final ICategoriaServicio categoriaServicio;
-    private final IUsuarioServicio usuarioServicio;
     private final PrecioServicio precioServicio;
 
     public FeedControlador(IPublicacionServicio publicacionServicio,
@@ -36,7 +35,6 @@ public class FeedControlador {
                             PrecioServicio precioServicio) {
         this.publicacionServicio = publicacionServicio;
         this.categoriaServicio = categoriaServicio;
-        this.usuarioServicio = usuarioServicio;
         this.precioServicio = precioServicio;
     }
 
@@ -85,9 +83,6 @@ public class FeedControlador {
         return "publicacion/feed";
     }
 
-    private Usuario usuarioSesion(HttpSession session) {
-        Object valor = session.getAttribute("usuarioLogueado");
-        return valor instanceof Usuario usuario ? usuario : null;
-    }
+
 }
 

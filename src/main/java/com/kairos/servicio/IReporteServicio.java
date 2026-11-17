@@ -5,9 +5,6 @@ import com.kairos.modelo.Usuario;
 
 import java.util.List;
 
-/**
- * Contrato de negocio para los reportes comunitarios (RF005).
- */
 public interface IReporteServicio {
 
 

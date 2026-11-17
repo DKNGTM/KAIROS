@@ -13,10 +13,10 @@ public interface ReporteRepositorio extends JpaRepository<Reporte, Long> {
     long countByPublicacionId(Long publicacionId);
 
     @EntityGraph(attributePaths = {"usuario", "publicacion"})
-    List<Reporte> findByPublicacionIdOrderByFechaReporteDesc(Long publicacionId);
+    List<Reporte> findByPublicacionIdOrderByIdDesc(Long publicacionId);
 
     @EntityGraph(attributePaths = {"usuario", "publicacion"})
-    List<Reporte> findAllByOrderByFechaReporteDesc();
+    List<Reporte> findAllByOrderByIdDesc();
 
     void deleteByPublicacionId(Long publicacionId);
 }

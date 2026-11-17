@@ -17,23 +17,20 @@ public interface PublicacionRepositorio extends JpaRepository<Publicacion, Long>
     Optional<Publicacion> findById(Long id);
 
     @EntityGraph(attributePaths = {"usuario", "categoria", "subcategoria"})
-    List<Publicacion> findByEstadoOrderByFechaCreacionDesc(EstadoPublicacion estado);
+    List<Publicacion> findByEstadoOrderByIdDesc(EstadoPublicacion estado);
 
     @EntityGraph(attributePaths = {"usuario", "categoria", "subcategoria"})
-    List<Publicacion> findAllByOrderByFechaCreacionDesc();
+    List<Publicacion> findAllByOrderByIdDesc();
 
     @EntityGraph(attributePaths = {"usuario", "categoria", "subcategoria"})
     List<Publicacion> findByEstadoOrderByPrecioOfertaAsc(EstadoPublicacion estado);
 
     @EntityGraph(attributePaths = {"usuario", "categoria", "subcategoria"})
-    List<Publicacion> findByUsuarioIdOrderByFechaCreacionDesc(Long usuarioId);
+    List<Publicacion> findByUsuarioIdOrderByIdDesc(Long usuarioId);
 
     long countByEstado(EstadoPublicacion estado);
 
-    /**
-     * Búsqueda combinada del feed: texto libre + categoría + subcategoría.
-     * El orden se aplica después en la capa de servicio.
-     */
+
     @Query("""
             SELECT p FROM Publicacion p
               JOIN FETCH p.usuario

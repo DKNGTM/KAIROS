@@ -174,9 +174,6 @@
                 <div class="avatar" th:text="${publicacion.usuario.iniciales}">SH</div>
                 <div>
                     <div class="curator__name" th:text="${'@' + publicacion.usuario.nombreUsuario}">@sys_hunter</div>
-                    <div class="curator__meta" th:text="${'Publicado ' + publicacion.tiempoTranscurrido}">
-                        Publicado hace 14 min
-                    </div>
                 </div>
             </div>
             <span class="badge badge--muted" th:text="${publicacion.usuario.rol.etiqueta}">Usuario</span>
@@ -184,7 +181,7 @@
     </div>
 </aside>
 
-<footer th:replace="~{fragmentos/footer :: footer}"></footer>
+
 
 <!-- Modal de reporte -->
 <div class="modal" id="report-modal" hidden>

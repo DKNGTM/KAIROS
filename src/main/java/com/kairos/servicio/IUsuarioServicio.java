@@ -6,9 +6,7 @@ import com.kairos.modelo.Usuario;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Contrato de negocio para la gestión de cuentas de usuario.
- */
+
 public interface IUsuarioServicio {
 
    

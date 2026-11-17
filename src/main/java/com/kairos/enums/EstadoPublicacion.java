@@ -25,7 +25,7 @@ public enum EstadoPublicacion {
         return tono;
     }
 
-    //valida si la publicación puede aparecer en el feed principal
+
     public boolean esVisibleEnFeed() {
         return this == ACTIVA || this == VENCIDA;
     }

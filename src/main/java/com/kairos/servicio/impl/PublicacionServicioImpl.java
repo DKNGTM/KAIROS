@@ -47,7 +47,7 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
     @Override
     @Transactional(readOnly = true)
     public List<Publicacion> obtenerPublicacionesActivas() {
-        return publicacionRepositorio.findByEstadoOrderByFechaCreacionDesc(EstadoPublicacion.ACTIVA);
+        return publicacionRepositorio.findByEstadoOrderByIdDesc(EstadoPublicacion.ACTIVA);
     }
 
     @Override
@@ -62,27 +62,18 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
                         categoriaId,
                         subcategoriaId);
 
-        // El feed se ordena en memoria para no parametrizar el ORDER BY y mantener el repositorio simple.
-        Comparator<Publicacion> porFecha = Comparator
-                .comparing(Publicacion::getFechaCreacion,
+
+        Comparator<Publicacion> comparador = switch (orden == null ? "" : orden) {
+                case "precio-asc" -> Comparator.comparing(Publicacion::getPrecioOferta,
+                        Comparator.nullsLast(Comparator.naturalOrder()));
+                case "precio-desc" -> Comparator.comparing(Publicacion::getPrecioOferta,
                         Comparator.nullsLast(Comparator.reverseOrder()));
-
-        Comparator<Publicacion> comparador = 
-        
-                switch (orden == null ? "" : orden) {
-
-            case "precio-asc" -> Comparator.comparing(Publicacion::getPrecioOferta,
-                    Comparator.nullsLast(Comparator.naturalOrder()));
-
-            case "precio-desc" -> Comparator.comparing(Publicacion::getPrecioOferta,
-                    Comparator.nullsLast(Comparator.reverseOrder()));
-                    
-            case "descuento" -> Comparator
-                    .comparingInt((Publicacion publicacion) -> precioServicio.calcularPorcentajeDescuento(publicacion))
-                    .reversed()
-                    .thenComparing(porFecha);
-            default -> porFecha;
-        };
+                case "descuento" -> Comparator
+                        .comparingInt((Publicacion p) -> precioServicio.calcularPorcentajeDescuento(p))
+                        .reversed();
+                default -> Comparator.comparing(Publicacion::getId,
+                        Comparator.nullsLast(Comparator.reverseOrder()));
+                };
 
         return resultados.stream().sorted(comparador).collect(Collectors.toList());
     }
@@ -208,19 +199,19 @@ public class PublicacionServicioImpl implements IPublicacionServicio {
     @Override
     @Transactional(readOnly = true)
     public List<Publicacion> listarTodas() {
-        return publicacionRepositorio.findAllByOrderByFechaCreacionDesc();
+        return publicacionRepositorio.findAllByOrderByIdDesc();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Publicacion> listarPorEstado(EstadoPublicacion estado) {
-        return publicacionRepositorio.findByEstadoOrderByFechaCreacionDesc(estado);
+        return publicacionRepositorio.findByEstadoOrderByIdDesc(estado);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Publicacion> listarPorUsuario(Long usuarioId) {
-        return publicacionRepositorio.findByUsuarioIdOrderByFechaCreacionDesc(usuarioId);
+        return publicacionRepositorio.findByUsuarioIdOrderByIdDesc(usuarioId);
     }
 
 

@@ -47,7 +47,6 @@ public class PublicacionFormDTO {
 
     private List<MultipartFile> imagenes = new ArrayList<>();
 
-    /** Validación cruzada: el precio original no puede ser inferior al precio de oferta. */
     @AssertTrue(message = "El precio original debe ser mayor o igual que el precio de oferta.")
     public boolean isPrecioCoherente() {
         if (precioOferta == null || precioOriginal == null) {

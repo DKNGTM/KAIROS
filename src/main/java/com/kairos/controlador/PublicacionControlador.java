@@ -19,9 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Controlador de publicaciones: creación de ofertas, detalle y reportes comunitarios.
- */
+
 @Controller
 @RequestMapping("/publicacion")
 public class PublicacionControlador {
